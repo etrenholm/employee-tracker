@@ -160,20 +160,24 @@ addEmployee = function() {
     let employees = []
 
     const sqlEmployee = `SELECT * FROM employees`
-    db.query(sqlEmployee, (err, res) => {
-        if (err) throw err;
-            res.map(({ id, first_name, last_name }) => {
+    db.promise().query(sqlEmployee)
+        .then(([rows]) => {
+            rows.map(({ id, first_name, last_name }) => {
             employees.push({ name: first_name + " " + last_name, value: id })
             })
         })
+        .catch(err => console.log(err))
+        .then(() => {
 
-    const sqlRole = `SELECT * FROM roles`
-    db.query(sqlRole, (err, res) => {
-        if (err) throw err;
-        res.map(({ id, title }) => {
-            roles.push({ name: title, value: id })
-        })
-    })
+            const sqlRoles = `SELECT * FROM roles`
+            db.promise().query(sqlRoles)
+                .then(([rows]) => {
+                    rows.map(({ id, title }) => {
+                    roles.push({ name: title, value: id })
+                    })
+                })
+                .catch(err => console.log(err))
+                .then(() => {
 
     inquirer
         .prompt([
@@ -202,7 +206,9 @@ addEmployee = function() {
         ])
             .then ((answers) => {
                 const params = [answers.firstName, answers.lastName, answers.title, answers.manager]
-                const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
+                const sql = `INSERT INTO employees 
+                            (first_name, last_name, role_id, manager_id) 
+                            VALUES (?,?,?,?)`;
 
                 db.query(sql, params, (err, res) => {
                     if (err) throw err;
@@ -210,22 +216,35 @@ addEmployee = function() {
                     startMenu();
                     });
             })
+        })
+    })
 }
 
 // UPDATE EMPLOYEE ROLES
 updateEmployeeRole = function() {
 
     let employees = []
+    let roles = []
 
     const sqlEmployee = `SELECT * FROM employees`
     db.promise().query(sqlEmployee)
-        .then(([rows, fields]) => {
+        .then(([rows]) => {
             rows.map(({ id, first_name, last_name }) => {
             employees.push({ name: first_name + " " + last_name, value: id })
             })
         })
         .catch(err => console.log(err))
         .then(() => {
+
+            const sqlRoles = `SELECT * FROM roles`
+            db.promise().query(sqlRoles)
+                .then(([rows]) => {
+                    rows.map(({ id, title }) => {
+                    roles.push({ name: title, value: id })
+                    })
+                })
+                .catch(err => console.log(err))
+                .then(() => {
 
             inquirer
                 .prompt([
@@ -236,26 +255,28 @@ updateEmployeeRole = function() {
                         choices: employees
                     },
                     {
-                        type: 'input',
+                        type: 'list',
                         name: 'title',
-                        message: "What is the employee's new role?"
+                        message: "What is the employee's new role?",
+                        choices: roles
                     }
                 ])
             .then ((answers) => {
 
                 const params = [answers.title, answers.employee]
-                const sql = `UPDATE roles
-                            SET title = ? 
+                const sql = `UPDATE employees
+                            SET role_id = ? 
                             WHERE id = ?`
 
                 db.query(sql, params, (err, res) => {
                     if (err) throw err;
-                    console.log('updated');
+                    console.log('You have updated ' + answers.firstName + ' ' + answers.lastName);
                     startMenu();
                     });
             })
         })
 
+    })
 }
 
 

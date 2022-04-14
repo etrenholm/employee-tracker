@@ -47,13 +47,13 @@ Project was updated using:
 * Ran files to ensure proper connection
 
 ### STEP 3. - CREATE FUNCTIONALITY
-* Installed Inquirer, console.table, and required  database connection
+* Installed Inquirer, console.table, and required  database connection in index.js
 * Created a start menu which used Inquirer to prompt user actions
 * Created JavaScript functions for each action
-* Within each function, used Inquirer to prompt user actions
-* Within each function, used mySQL to write queries and return appropriate tables based on answers to inquirer prompts
+* Within each function, used Inquirer to prompt user answers (if needed)
+* Within each function, used mySQL to write queries and return appropriate tables based on user actions or answers to inquirer prompts
 
-### STEP 6. - FINALIZE
+### STEP 4. - FINALIZE
 * Added verification to Inquirer prompts
 * Made various commits throughout process to save progress
 * Recorded video to show how to run the application
