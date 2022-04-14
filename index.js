@@ -45,9 +45,9 @@ startMenu = function() {
 viewDepartments = function() {
     const sql = `SELECT * FROM departments`;
 
-    db.query(sql, (err, result) => {
+    db.query(sql, (err, res) => {
         if (err) throw err;
-        console.table(result);
+        console.table(res);
         startMenu();
       });
 }
@@ -56,9 +56,9 @@ viewDepartments = function() {
 viewRoles = function() {
     const sql = `SELECT * FROM roles`;
 
-    db.query(sql, (err, result) => {
+    db.query(sql, (err, res) => {
         if (err) throw err;
-        console.table(result);
+        console.table(res);
         startMenu();
       });
 }
@@ -80,9 +80,9 @@ viewEmployees = function() {
                 LEFT JOIN employees AS employee
                     ON employees.manager_id = employee.id`;
 
-    db.query(sql, (err, result) => {
+    db.query(sql, (err, res) => {
         if (err) throw err;
-        console.table(result);
+        console.table(res);
         startMenu();
       });
 }
