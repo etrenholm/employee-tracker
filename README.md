@@ -24,7 +24,6 @@ Project was updated using:
 * VS Code
 * JavaScript
 * Node.js
-* Express.js
 * Inquirer
 * Insomnia
 * Terminal

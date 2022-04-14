@@ -1,13 +1,13 @@
 const inquirer = require('inquirer');
 const db = require('./db/connection')
-const consoleTable = require('console.table')
+require('console.table')
 
 startMenu = function() {
     inquirer
         .prompt({
             type: 'list',
             name: 'action',
-            message: 'Would you like to do?',
+            message: 'What would you like to do?',
             choices: 
             [
                 'View All Departments', 
@@ -36,12 +36,12 @@ startMenu = function() {
             } else if (action === 'Update Employee Role') {
                 updateEmployeeRole()
             } else if (action === 'Exit') {
-                return;
+                db.end();
             }
         })
 }
 
-// VIEW ALL DEPARTMENTS, ROLES, OR EMPLOYEES
+// VIEW ALL DEPARTMENTS
 viewDepartments = function() {
     const sql = `SELECT * FROM departments`;
 
@@ -52,6 +52,7 @@ viewDepartments = function() {
       });
 }
 
+// VIEW ALL ROLES
 viewRoles = function() {
     const sql = `SELECT * FROM roles`;
 
@@ -62,14 +63,22 @@ viewRoles = function() {
       });
 }
 
+// VIEW ALL EMPLOYEES
 viewEmployees = function() {
-    const sql = `SELECT 
-                employees.id,
-                employees.first_name, 
-                employees.last_name,
-                roles.title
-                FROM employees
-                JOIN roles ON employees.role_id = roles.id`;
+    const sql = `SELECT employees.id,
+                    employees.first_name, 
+                    employees.last_name,
+                    roles.title,
+                    departments.name AS department,
+                    roles.salary,
+                    CONCAT(employee.first_name,' ',employee.last_name) AS manager
+                    FROM employees
+                LEFT JOIN roles
+                    ON employees.role_id = roles.id
+                LEFT JOIN departments
+                    ON roles.department_id = departments.id
+                LEFT JOIN employees AS employee
+                    ON employees.manager_id = employee.id`;
 
     db.query(sql, (err, result) => {
         if (err) throw err;
@@ -78,14 +87,14 @@ viewEmployees = function() {
       });
 }
 
-// ADD DEPARTMENTS, ROLES, OR EMPLOYEES
+// ADD A DEPARTMENT
 addDepartment = function() {
     inquirer
         .prompt([
             {
                 type: 'input',
                 name: 'department',
-                message: 'What department would you like to add?',
+                message: 'Please type the department you would like to add?',
             }
         ])
         .then ((answer) => {
@@ -94,13 +103,25 @@ addDepartment = function() {
 
             db.query(sql, param, (err, res) => {
                 if (err) throw err;
-                console.log('You have added ' + answer.department + 'to the database.');
-                viewDepartments();
+                console.log('You have added ' + answer.department + ' to the database.');
+                startMenu();
             });
         })
 }
 
+// ADD A ROLE
 addRole = function() {
+
+    let departments = []
+
+    const sql = `SELECT * FROM departments`
+    db.query(sql, (err, res) => {
+        if (err) throw err;
+        res.map(({ id, name }) => {
+            departments.push({ name: name, value: id })
+        })
+    })
+
     inquirer
         .prompt([
             {
@@ -117,31 +138,43 @@ addRole = function() {
                 type: 'list',
                 name: 'department',
                 message: 'What department does this role belong to?',
-                choices: 
-                // add choices based on current table
-                [
-                    'Finance',
-                    'Legal',
-                    'Sales',
-                    'Engineering',
-                    'Marketing'
-                ]
+                choices: departments
             }
         ])
         .then ((answers) => {
             const params = [answers.title, answers.salary, answers.department]
-            // convert department id into number???
             const sql = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)`;
 
             db.query(sql, params, (err, res) => {
                 if (err) throw err;
-                console.log('You have added ' + answers.title + 'to the database');
-                viewDepartments();
+                console.log('You have added ' + answers.title + ' to the database');
+                startMenu();
                 });
         })
 }
 
+// ADD AN EMPLOYEE
 addEmployee = function() {
+
+    let roles = []
+    let employees = []
+
+    const sqlEmployee = `SELECT * FROM employees`
+    db.query(sqlEmployee, (err, res) => {
+        if (err) throw err;
+            res.map(({ id, first_name, last_name }) => {
+            employees.push({ name: first_name + " " + last_name, value: id })
+            })
+        })
+
+    const sqlRole = `SELECT * FROM roles`
+    db.query(sqlRole, (err, res) => {
+        if (err) throw err;
+        res.map(({ id, title }) => {
+            roles.push({ name: title, value: id })
+        })
+    })
+
     inquirer
         .prompt([
             {
@@ -155,51 +188,76 @@ addEmployee = function() {
                 message: "What is the employee's last name?",
             },
             {
-                type: 'input',
-                name: 'role',
+                type: 'list',
+                name: 'title',
                 message: "What is the employee's role?",
+                choices: roles
             },
             {
-                type: 'input',
+                type: 'list',
                 name: 'manager',
-                message: "Who employee's manager?",
+                message: "Who is the employee's manager?",
+                choices: employees
             }
         ])
             .then ((answers) => {
-                // convert role and manager id into number???
-                const params = [answers.firstName, answers.lastName, answers.role, answers.manager]
-                const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?)`;
+                const params = [answers.firstName, answers.lastName, answers.title, answers.manager]
+                const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
 
-                // ADD DB.QUERY
+                db.query(sql, params, (err, res) => {
+                    if (err) throw err;
+                    console.log('You have added ' + answers.firstName + ' ' + answers.lastName + ' to the database');
+                    startMenu();
+                    });
             })
 }
 
+// UPDATE EMPLOYEE ROLES
 updateEmployeeRole = function() {
-    inquirer
-        .prompt([
-            {
-                type: 'list',
-                name: 'employee',
-                message: "Select an employee to update:",
-                choices: 
-                // input choices from 
-                [
-                    'employee name'
-                ]
-            },
-            // then what???
-        ])
-            .then ((answers) => {
-                // convert role into number???
 
-                const sql = `UPDATE roles
-                SET title = ? WHERE id = ?
-                `
+    let employees = []
 
-                // ADD DB.QUERY
+    const sqlEmployee = `SELECT * FROM employees`
+    db.promise().query(sqlEmployee)
+        .then(([rows, fields]) => {
+            rows.map(({ id, first_name, last_name }) => {
+            employees.push({ name: first_name + " " + last_name, value: id })
             })
-    }
-    
+        })
+        .catch(err => console.log(err))
+        .then(() => {
+
+            inquirer
+                .prompt([
+                    {
+                        type: 'list',
+                        name: 'employee',
+                        message: "Select an employee to update:",
+                        choices: employees
+                    },
+                    {
+                        type: 'input',
+                        name: 'title',
+                        message: "What is the employee's new role?"
+                    }
+                ])
+            .then ((answers) => {
+
+                const params = [answers.title, answers.employee]
+                const sql = `UPDATE roles
+                            SET title = ? 
+                            WHERE id = ?`
+
+                db.query(sql, params, (err, res) => {
+                    if (err) throw err;
+                    console.log('updated');
+                    startMenu();
+                    });
+            })
+        })
+
+}
+
 
 
 startMenu()
