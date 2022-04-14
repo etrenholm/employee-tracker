@@ -11,7 +11,7 @@
 * [Credit](#credit)
 
 ## Description
-Create an application for a small business owner to write, save and delete notes.
+Create an application for a business owner to view and manage the departments, roles, and employees within their company and keep their business organized.
 
 ## Installation
 To install this application, type “npm install" in the command line.
@@ -25,10 +25,10 @@ Project was updated using:
 * JavaScript
 * Node.js
 * Inquirer
-* Insomnia
 * Terminal
 * Git
 * GitHub
+* MySQL
 
 ## References
 
