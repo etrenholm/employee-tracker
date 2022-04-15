@@ -47,7 +47,7 @@ node index.js
 * [Inquirer package](https://www.npmjs.com/package/inquirer)
 
 ## Process
-### STEP 1. - SETUP
+### STEP 1. - SETUP PROJECT
 * Created GitHub Repository with a unique name.
 * Pushed first commit of files into the new Repo using Git.
 * Organized folder and file directory structure.
