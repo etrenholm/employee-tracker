@@ -74,11 +74,11 @@ node index.js
 * Made tweaks and finished README.md
 
 ## Results
-* [Video Link]()
+* [Video Link](https://drive.google.com/file/d/15R1OQa_T71hmtQ5LOTOaaSFAvv-8UHlB/view)
 * [GitHub Repository](https://github.com/etrenholm/employee-tracker)
 
 ### Output Example
-![mockup]()
+![mockup](./assets/tracker-mockup.gif)
 
 ## Credit
 Erica Trenholm: https://github.com/etrenholm
