@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const db = require('./db/connection')
 require('console.table')
 
-startMenu = function() {
+function startMenu() {
     inquirer
         .prompt({
             type: 'list',
@@ -42,7 +42,7 @@ startMenu = function() {
 }
 
 // VIEW ALL DEPARTMENTS
-viewDepartments = function() {
+function viewDepartments() {
     const sql = `SELECT * FROM departments`;
 
     db.query(sql, (err, res) => {
@@ -53,7 +53,7 @@ viewDepartments = function() {
 }
 
 // VIEW ALL ROLES
-viewRoles = function() {
+function viewRoles() {
     const sql = `SELECT roles.id,
                     roles.title,
                     roles.salary,
@@ -70,7 +70,7 @@ viewRoles = function() {
 }
 
 // VIEW ALL EMPLOYEES
-viewEmployees = function() {
+function viewEmployees() {
     const sql = `SELECT employees.id,
                     employees.first_name, 
                     employees.last_name,
@@ -94,7 +94,7 @@ viewEmployees = function() {
 }
 
 // ADD A DEPARTMENT
-addDepartment = function() {
+function addDepartment() {
     inquirer
         .prompt([
             {
@@ -124,7 +124,7 @@ addDepartment = function() {
 }
 
 // ADD A ROLE
-addRole = function() {
+function addRole() {
 
     let departments = []
 
@@ -185,7 +185,7 @@ addRole = function() {
 }
 
 // ADD AN EMPLOYEE
-addEmployee = function() {
+function addEmployee() {
 
     let roles = []
     let employees = []
@@ -268,7 +268,7 @@ addEmployee = function() {
 }
 
 // UPDATE EMPLOYEE ROLES
-updateEmployeeRole = function() {
+function updateEmployeeRole() {
 
     let employees = []
     let roles = []
