@@ -54,7 +54,13 @@ viewDepartments = function() {
 
 // VIEW ALL ROLES
 viewRoles = function() {
-    const sql = `SELECT * FROM roles`;
+    const sql = `SELECT roles.id,
+                    roles.title,
+                    roles.salary,
+                    departments.name AS department
+                FROM roles
+                LEFT JOIN departments
+                    ON roles.department_id = departments.id`;
 
     db.query(sql, (err, res) => {
         if (err) throw err;
@@ -72,7 +78,7 @@ viewEmployees = function() {
                     departments.name AS department,
                     roles.salary,
                     CONCAT(employee.first_name,' ',employee.last_name) AS manager
-                    FROM employees
+                FROM employees
                 LEFT JOIN roles
                     ON employees.role_id = roles.id
                 LEFT JOIN departments
@@ -95,6 +101,14 @@ addDepartment = function() {
                 type: 'input',
                 name: 'department',
                 message: 'Please type the department you would like to add?',
+                validate: departmentInput => {
+                    if (departmentInput) {
+                        return true
+                    } else {
+                        console.log("Please enter a department.")
+                        return false
+                    }
+                }
             }
         ])
         .then ((answer) => {
@@ -128,11 +142,28 @@ addRole = function() {
                 type: 'input',
                 name: 'title',
                 message: 'What role would you like to add?',
+                validate: roleInput => {
+                    if (roleInput) {
+                        return true
+                    } else {
+                        console.log("Please enter a role.")
+                        return false
+                    }
+                }
+                
             },
             {
                 type: 'input',
                 name: 'salary',
                 message: 'What is the salary of this role?',
+                validate: salaryInput => {
+                    if (salaryInput) {
+                        return true
+                    } else {
+                        console.log("Please enter a valid salary.")
+                        return false
+                    }
+                }
             },
             {
                 type: 'list',
@@ -179,31 +210,47 @@ addEmployee = function() {
                 .catch(err => console.log(err))
                 .then(() => {
 
-    inquirer
-        .prompt([
-            {
-                type: 'input',
-                name: 'firstName',
-                message: "What is the employee's first name?",
-            },
-            {
-                type: 'input',
-                name: 'lastName',
-                message: "What is the employee's last name?",
-            },
-            {
-                type: 'list',
-                name: 'title',
-                message: "What is the employee's role?",
-                choices: roles
-            },
-            {
-                type: 'list',
-                name: 'manager',
-                message: "Who is the employee's manager?",
-                choices: employees
-            }
-        ])
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    name: 'firstName',
+                    message: "What is the employee's first name?",
+                    validate: firstNameInput => {
+                        if (firstNameInput) {
+                            return true
+                        } else {
+                            console.log("Please enter a first name.")
+                            return false
+                        }
+                    }
+                },
+                {
+                    type: 'input',
+                    name: 'lastName',
+                    message: "What is the employee's last name?",
+                    validate: lastNameInput => {
+                        if (lastNameInput) {
+                            return true
+                        } else {
+                            console.log("Please enter a last name.")
+                            return false
+                        }
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'title',
+                    message: "What is the employee's role?",
+                    choices: roles
+                },
+                {
+                    type: 'list',
+                    name: 'manager',
+                    message: "Who is the employee's manager?",
+                    choices: employees
+                }
+            ])
             .then ((answers) => {
                 const params = [answers.firstName, answers.lastName, answers.title, answers.manager]
                 const sql = `INSERT INTO employees 

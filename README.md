@@ -14,23 +14,37 @@
 Create an application for a business owner to view and manage the departments, roles, and employees within their company and keep their business organized.
 
 ## Installation
-To install this application, type “npm install" in the command line.
+Open the terminal and type the following to install the MySQL2, Inquirer, and console.table packages:
+```
+npm install mysql2 inquirer console_table
+``` 
+Open the mysql shell in the terminal. After starting mysql, type the following:
+```
+source db/schema.sql;
+source db/seeds.sql;
+``` 
+Exit the mysql shell.
 
 ## Usage
-To run this application, type "node index.js" in the command line.
+To run this application, type the following into the command line:
+
+```
+node index.js
+``` 
 
 ## Technologies
-Project was updated using:
 * VS Code
 * JavaScript
 * Node.js
 * Inquirer
 * Terminal
-* Git
-* GitHub
-* mySQL
+* Git/GitHub
+* MySQL
 
 ## References
+* [console.table package](https://www.npmjs.com/package/console.table)
+* [MySQL2 package](https://www.npmjs.com/package/mysql2)
+* [Inquirer package](https://www.npmjs.com/package/inquirer)
 
 ## Process
 ### STEP 1. - SETUP
